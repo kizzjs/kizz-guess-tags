@@ -1,6 +1,6 @@
 var _ = require("underscore"),
-    guessTagsEn = require("lib/guess-tags-en"),
-    guessTagsCn = require("lib/guess-tags-cn");;
+    guessTagsEn = require("./lib/guess-tags-en"),
+    guessTagsCn = require("./lib/guess-tags-cn");;
 
 module.exports = function(app) {
     app.when(function *() {

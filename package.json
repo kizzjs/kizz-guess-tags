@@ -1,6 +1,6 @@
 {
   "name": "kizz-guess-tags",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "dependencies": {
     "natural": "0.1.16",
     "underscore": "^1.6.0",
