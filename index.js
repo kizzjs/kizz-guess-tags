@@ -1,4 +1,5 @@
-var natural = require("natural");
+var natural = require("natural"),
+    _ = require("underscore");
 
 var parseWord = function(word) {
     word = word.toLowerCase();
@@ -7,10 +8,11 @@ var parseWord = function(word) {
 
 var guessTags = function(string, tags) {
 
-    console.log(tags);
-
-    string = string.replace(/[^A-Za-z\.'"]/g, " ");
-    tags = tags.filter(/[A-Za-z\.'"]/g.test).map(parseWord);
+    string = string.replace(/[^A-Za-z\.'"-]/g, " ");
+    tags = tags.filter(function(tag) {
+        return /[A-Za-z\.'"-]/g.test(tag);
+    });
+    tags = tags.map(parseWord);
     var tokenizer = new natural.WordTokenizer(),
         words = tokenizer.tokenize(string).map(parseWord);
     return tags.filter(function(tag) {
@@ -20,14 +22,9 @@ var guessTags = function(string, tags) {
 
 module.exports = function(app) {
     app.when(function *() {
-        var file;
-        for(var i = 0; i < this.changedFiles.length; i++) {
-            file = this.changedFiles[i];
-            if(file.content) {
-                return true;
-            }
-        }
-        return false;
+        return _.find(this.changedFiles, function(file) {
+            return (typeof file.content !== "undefined");
+        });
     }).use(function *(next) {
         var globalTags = this.config.tags;
         this.changedFiles = this.changedFiles.map(function(file) {

@@ -1,7 +1,8 @@
 {
-    "name": "kizz-guess-tags-en",
-    "version": "0.0.1",
-    "dependencies": {
-        "natural": "0.1.16"
-    }
+  "name": "kizz-guess-tags-en",
+  "version": "0.0.1",
+  "dependencies": {
+    "natural": "0.1.16",
+    "underscore": "^1.6.0"
+  }
 }
