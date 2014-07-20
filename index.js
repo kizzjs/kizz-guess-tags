@@ -1,24 +1,6 @@
-var natural = require("natural"),
-    _ = require("underscore");
-
-var parseWord = function(word) {
-    word = word.toLowerCase();
-    return natural.PorterStemmer.stem(word);
-}
-
-var guessTags = function(string, tags) {
-
-    string = string.replace(/[^A-Za-z\.'"-]/g, " ");
-    tags = tags.filter(function(tag) {
-        return /[A-Za-z\.'"-]/g.test(tag);
-    });
-    tags = tags.map(parseWord);
-    var tokenizer = new natural.WordTokenizer(),
-        words = tokenizer.tokenize(string).map(parseWord);
-    return tags.filter(function(tag) {
-        return words.indexOf(tag) > -1;
-    });
-}
+var _ = require("underscore"),
+    guessTagsEn = require("lib/guess-tags-en"),
+    guessTagsCn = require("lib/guess-tags-cn");;
 
 module.exports = function(app) {
     app.when(function *() {
@@ -29,12 +11,12 @@ module.exports = function(app) {
         var globalTags = this.config.tags;
         this.changedFiles = this.changedFiles.map(function(file) {
             if(file.content) {
-                var str = file.content + " " + file.path,
-                    tags = guessTags(str, globalTags);
+                var str = file.content + " " + file.path;
                 if(!file.tags) {
                     file.tags = [];
                 }
-                file.tags = file.tags.concat(tags);
+                file.tags = file.tags.concat(guessTagsEn(str, globalTags));
+                file.tags = file.tags.concat(guessTagsCn(str, globalTags));
             }
             return file;
         });
