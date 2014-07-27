@@ -8,6 +8,9 @@ module.exports = function(app) {
             return (typeof file.content !== "undefined");
         });
     }).use(function *(next) {
+
+        this.logger.debug("kizz-guess-tags: init");
+
         var globalTags = this.config.tags;
         this.changedFiles = this.changedFiles.map(function(file) {
             if(file.content) {
@@ -20,6 +23,7 @@ module.exports = function(app) {
             }
             return file;
         });
+
         yield next;
     });
 }
