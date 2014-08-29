@@ -4,15 +4,20 @@ var _ = require("underscore"),
 
 module.exports = function(app) {
     app.when(function *() {
-        return _.find(this.changedFiles, function(file) {
-            return (typeof file.content !== "undefined");
-        });
+
+        var isContentDefined = function(files) {
+            return files && _.find(files, function(file) {
+                return (typeof file.content !== "undefined");
+            });
+        };
+        return isContentDefined(this.newFiles) || isContentDefined(this.changedFiles);
+
     }).use(function *(next) {
 
-        this.logger.debug("kizz-guess-tags: init");
+        this.logger.debug("kizz-guess-tags: INIT");
 
         var globalTags = this.config.tags;
-        this.changedFiles = this.changedFiles.map(function(file) {
+        var guessTags = function(file) {
             if(file.content) {
                 var str = file.content + " " + file.path;
                 if(!file.tags) {
@@ -22,8 +27,13 @@ module.exports = function(app) {
                 file.tags = file.tags.concat(guessTagsCn(str, globalTags));
             }
             return file;
-        });
+        };
+
+        this.changedFiles = this.changedFiles.map(guessTags);
+        this.newFiles = this.newFiles.map(guessTags);
+
+        this.logger.debug("kizz-guess-tags: DONE");
 
         yield next;
     });
-}
+};
