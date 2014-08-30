@@ -17,7 +17,7 @@ module.exports = function(app) {
         var globalTags = this.config.tags,
             ctx = this;
         var guessTags = function(file) {
-            if(file.content) {
+            if(typeof file.content !== "undefined") {
                 var str = file.content + " " + file.path;
                 if(!file.tags) {
                     file.tags = [];
