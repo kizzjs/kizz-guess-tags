@@ -14,9 +14,8 @@ module.exports = function(app) {
 
     }).use(function *(next) {
 
-        this.logger.debug("kizz-guess-tags: INIT");
-
-        var globalTags = this.config.tags;
+        var globalTags = this.config.tags,
+            ctx = this;
         var guessTags = function(file) {
             if(file.content) {
                 var str = file.content + " " + file.path;
@@ -25,14 +24,13 @@ module.exports = function(app) {
                 }
                 file.tags = file.tags.concat(guessTagsEn(str, globalTags));
                 file.tags = file.tags.concat(guessTagsCn(str, globalTags));
+                ctx.logger.info(file.title + ': ' + JSON.stringify(file.tags));
             }
             return file;
         };
 
         this.changedFiles = this.changedFiles.map(guessTags);
         this.newFiles = this.newFiles.map(guessTags);
-
-        this.logger.debug("kizz-guess-tags: DONE");
 
         yield next;
     });
