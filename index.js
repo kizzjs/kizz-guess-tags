@@ -18,7 +18,7 @@ module.exports = function(app) {
             ctx = this;
         var guessTags = function(file) {
             if(typeof file.content !== "undefined") {
-                var str = file.content + " " + file.path;
+                var str = [file.content, file.path, file.title].join(' ');
                 if(!file.tags) {
                     file.tags = [];
                 }
