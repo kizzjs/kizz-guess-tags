@@ -1,16 +1,17 @@
-var _ = require("underscore"),
-    guessTagsEn = require("./lib/guess-tags-en"),
-    guessTagsCn = require("./lib/guess-tags-cn");;
+var guessTagsEn = require("./lib/guess-tags-en"),
+    guessTagsCn = require("./lib/guess-tags-cn");
 
 module.exports = function(app) {
     app.when(function *() {
 
         var isContentDefined = function(files) {
-            return files && _.find(files, function(file) {
+            return (typeof files !== "undefined") && files.some(function(file) {
                 return (typeof file.content !== "undefined");
             });
         };
-        return isContentDefined(this.newFiles) || isContentDefined(this.changedFiles);
+
+        var ready = isContentDefined(this.newFiles) || isContentDefined(this.changedFiles);
+        return ready;
 
     }).use(function *(next) {
 
