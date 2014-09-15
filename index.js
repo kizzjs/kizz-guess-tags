@@ -4,21 +4,16 @@ var guessTagsEn = require("./lib/guess-tags-en"),
 module.exports = function(app) {
     app.when(function *() {
 
-        var isContentDefined = function(files) {
-            return (typeof files !== "undefined") && files.some(function(file) {
-                return (typeof file.content !== "undefined");
-            });
-        };
-
-        var ready = isContentDefined(this.newFiles) || isContentDefined(this.changedFiles);
-        return ready;
+        return (typeof this.files !== "undefined" && this.files.some(function(file) {
+            return (typeof file.content !== "undefined");
+        }));
 
     }).use(function *(next) {
 
         var globalTags = this.config.tags,
             ctx = this;
-        var guessTags = function(file) {
-            if(typeof file.content !== "undefined") {
+        this.files = this.files.map(function(file) {
+            if(typeof file.content !== "undefined" && file.status === "modified") {
                 var str = [file.content, file.path, file.title].join(' ');
                 if(!file.tags) {
                     file.tags = [];
@@ -28,10 +23,7 @@ module.exports = function(app) {
                 ctx.logger.info(file.title + ': ' + JSON.stringify(file.tags));
             }
             return file;
-        };
-
-        this.changedFiles = this.changedFiles.map(guessTags);
-        this.newFiles = this.newFiles.map(guessTags);
+        });
 
         yield next;
     });
